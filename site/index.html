@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>idkyoupick</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#14070b;--velvet:#2a0c14;--panel:#2f1019;--panel2:#3b1520;--gold:#e6b94a;--gold2:#a77f1f;--line:#6b4a1c;--text:#f4e7c5;--mut:#b9a275;--acc:#e6b94a;--inc:#5fb27a;--exc:#d9534f;
+--px:"VT323",ui-monospace,Menlo,monospace;--px2:"Press Start 2P",ui-monospace,monospace}
+*{box-sizing:border-box;border-radius:0}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font:20px/1.1 var(--px);display:flex;flex-direction:column;letter-spacing:.2px}
+button{font:inherit;color:inherit;cursor:pointer}
+header{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:4px double var(--gold);
+  background:repeating-linear-gradient(90deg,#3b0f1b 0 12px,#2a0a13 12px 24px);flex-wrap:wrap}
+header h1{font:400 20px/1 var(--px2);margin:0;color:var(--gold);text-shadow:3px 3px 0 #000,0 0 14px rgba(230,185,74,.35);letter-spacing:1px;white-space:nowrap}
+header h1 span{color:#fff1c2}
+.bulbs{height:16px;position:relative;background:#0b0305;border-bottom:2px solid var(--gold2);overflow:hidden}
+.bulbs::before,.bulbs::after{content:"";position:absolute;inset:0;
+  background:radial-gradient(circle at 8px 8px,#fff3b8 0 2px,#f5c542 3px 4px,transparent 5px) 0 0/24px 16px repeat-x}
+.bulbs::after{background-position:12px 0;animation:blink 1.1s steps(1) infinite}
+.bulbs::before{animation:blink 1.1s steps(1) infinite reverse}
+@keyframes blink{50%{opacity:.25}}
+.sp{flex:1}
+.btn{background:var(--panel2);border:2px solid var(--gold2);padding:5px 12px;font-size:19px;color:var(--text);box-shadow:3px 3px 0 #000}
+.btn:hover{border-color:var(--gold);color:#fff}
+.btn:active{box-shadow:1px 1px 0 #000;transform:translate(2px,2px)}
+.btn.pri{background:var(--gold);border-color:#fff1c2;color:#2a0c14;font-weight:700}
+select.btn{appearance:auto;min-width:250px}
+#grid{transition:opacity .15s}
+#grid.stale{opacity:.45;pointer-events:none}
+main{flex:1;display:flex;min-height:0}
+aside{width:350px;flex:none;border-right:4px double var(--gold2);overflow:auto;padding:12px 14px 40px;
+  background:repeating-linear-gradient(90deg,#2a0c14 0 8px,#260a12 8px 16px)}
+section.res{flex:1;display:flex;flex-direction:column;min-width:0;
+  background-image:radial-gradient(#2a0f16 1px,transparent 1px);background-size:6px 6px}
+.group{margin-bottom:16px}
+.ghead{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.ghead h3{margin:0;font:400 10px/1.3 var(--px2);color:var(--gold);text-transform:uppercase;letter-spacing:.5px}
+.tog{border:2px solid var(--line);background:#1b0910;padding:0 7px;font-size:16px;color:var(--mut)}
+.tog.on{color:#2a0c14;background:var(--gold);border-color:var(--gold)}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{border:2px solid var(--line);background:#1b0910;padding:1px 8px;font-size:19px;color:var(--text)}
+.chip:hover{border-color:var(--gold);color:#fff}
+.chip.inc{background:#173a26;border-color:var(--inc);color:#bff0d0}
+.chip.inc::before{content:"+ "}
+.chip.exc{background:#4a1414;border-color:var(--exc);color:#ffc4c0}
+.chip.exc::before{content:"NOT "}
+.chip.sel{background:#4a3410;border-color:var(--gold);color:#ffe9a8}
+.chip .x{margin-left:6px;opacity:.8}
+.kwlabel{font:400 8px/1.2 var(--px2);color:var(--mut);margin:11px 0 5px;text-transform:uppercase}
+input[type=text]{width:100%;background:#1b0910;border:2px solid var(--line);padding:5px 9px;color:var(--text);font:inherit}
+input[type=text]:focus{outline:none;border-color:var(--gold)}
+input[type=range]{width:100%;accent-color:var(--gold)}
+.dd{position:relative}
+.dd .list{position:absolute;z-index:5;left:0;right:0;top:100%;background:#1b0910;border:2px solid var(--gold);max-height:240px;overflow:auto;margin-top:2px;box-shadow:4px 4px 0 #000}
+.dd .list div{padding:5px 10px;cursor:pointer;display:flex;justify-content:space-between;gap:8px}
+.dd .list div:hover{background:var(--panel2)}
+.dd .list small{color:var(--mut)}
+#rulebar{padding:10px 16px;border-bottom:2px dashed var(--gold2);background:#3a2410;color:#2a1608;background:var(--cream,#ecd9a6);
+  background:#ecd9a6;font-size:21px;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;position:relative}
+#rulebar .lbl{color:#6a4a1c}
+#rulebar .term{background:#2a0c14;color:#f4e7c5;padding:0 8px}
+#rulebar .conn{border:2px solid #7a1f2b;background:#7a1f2b;color:#ffe9a8;padding:0 8px;font-size:18px;font-weight:700}
+#rulebar .not{color:#ff9b95}
+#meta{padding:8px 16px;color:var(--mut);font-size:19px;display:flex;gap:10px;align-items:center}
+#grid{flex:1;overflow:auto;padding:4px 16px 24px;display:grid;gap:12px;grid-template-columns:repeat(5,minmax(0,1fr));grid-auto-rows:max-content;align-content:start}
+#grid.large{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{display:block;color:inherit;background:#2a0c14;border:2px solid var(--gold2);overflow:hidden;cursor:pointer;text-align:left;padding:0;box-shadow:4px 4px 0 #000}
+.card:hover{border-color:var(--gold);transform:translate(-1px,-1px);box-shadow:6px 6px 0 #000}
+.card img,.card .ph{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:#1b0910;border-bottom:2px solid var(--gold2)}
+.card .ph{display:flex;align-items:center;justify-content:center;color:var(--mut);padding:8px;text-align:center}
+.card .t{padding:4px 7px 6px;font-size:18px;border-top:2px dashed var(--line)}
+.card .t b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:400;color:#fff1c2}
+.card .t span{color:var(--mut);font-size:17px}
+.rt.fresh{color:#8fe3a2}.rt.rot{color:#ff9b95}
+.msg{grid-column:1/-1;color:var(--mut);padding:40px;text-align:center;font-size:22px}
+.msg.err{color:#ffb3ae}
+#modal{position:fixed;inset:0;background:rgba(8,2,4,.82);display:none;align-items:flex-start;justify-content:center;padding:4vh 16px;overflow:auto;z-index:20}
+#modal.open{display:flex}
+.sheet{background:var(--panel);border:4px double var(--gold);max-width:880px;width:100%;display:flex;gap:18px;padding:18px;position:relative;box-shadow:8px 8px 0 #000}
+.sheet img.poster{width:220px;flex:none;align-self:flex-start;border:2px solid var(--gold2)}
+.sheet h2{margin:0 0 6px;font:400 15px/1.4 var(--px2);color:var(--gold)}
+.sheet .sub{color:var(--mut);margin-bottom:10px;font-size:20px}
+.sheet .row{margin:10px 0;font-size:21px;line-height:1.15}
+.sheet .row b{display:block;font:400 8px/1.2 var(--px2);text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+.sheet .close{position:absolute;right:10px;top:6px;background:none;border:0;font-size:30px;color:var(--gold)}
+.rated{border:2px solid var(--mut);padding:0 5px;font-size:17px}
+iframe{width:100%;aspect-ratio:16/9;border:2px solid var(--gold2)}
+@media(max-width:800px){main{flex-direction:column}aside{width:auto;max-height:45vh;border-right:0;border-bottom:4px double var(--gold2)}#grid{grid-template-columns:repeat(3,1fr)}.sheet{flex-direction:column}header h1{font-size:15px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>idk<span>youpick</span></h1>
+  <div class="sp"></div>
+  <select class="btn" id="sortSel" title="Sort"><option value="pop">Sort: Most popular</option><option value="rt">Sort: Rotten Tomatoes</option><option value="imdb">Sort: IMDb score (5,000+ votes)</option><option value="new">Sort: Newest (released)</option></select>
+  <button class="btn" id="sizeBtn">Larger cards</button>
+  <button class="btn" id="clearBtn">Clear all</button>
+  <button class="btn pri" id="pickBtn">Pick One For Me</button>
+</header>
+<div class="bulbs"></div>
+<main>
+  <aside id="filters"></aside>
+  <section class="res">
+    <div id="rulebar"></div>
+    <div id="meta"></div>
+    <div id="grid"></div>
+  </section>
+</main>
+<div id="modal"></div>
+
+<script>
+/* Keyless data source: JustWatch's public GraphQL endpoint (no API key). */
+const GQL='/graphql';
+const MAX_INFLIGHT=10;let inflight=0,pauseUntil=0;const waiters=[];
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const STALE=new Error('stale');
+async function slot(){
+  for(;;){
+    const wait=pauseUntil-Date.now();if(wait>0)await sleep(wait);
+    if(inflight<MAX_INFLIGHT)break;
+    await new Promise(r=>waiters.push(r));
+  }
+  inflight++;
+}
+function release(){inflight--;const w=waiters.shift();if(w)w()}
+const CACHE=new Map();
+// POST a GraphQL query: capped concurrency, 2 retries, in-memory response cache, drops work for stale searches.
+function gql(query,variables,alive){
+  const key=query+JSON.stringify(variables);
+  if(CACHE.has(key))return CACHE.get(key);
+  const p=(async()=>{
+    await slot();
+    try{
+      if(alive&&!alive())throw STALE;
+      for(let attempt=0;;attempt++){
+        try{
+          const r=await fetch(GQL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({query,variables})});
+          if(r.status===429||r.status===503){   // the data source is rate-limiting: pause every request, then retry
+            const ra=+r.headers.get('retry-after')||0;
+            pauseUntil=Math.max(pauseUntil,Date.now()+Math.max(ra*1000,2000*(attempt+1)));
+            throw new Error('HTTP '+r.status);
+          }
+          if(!r.ok)throw new Error('HTTP '+r.status);
+          const d=await r.json();
+          if(d.errors&&!d.data)throw new Error(d.errors[0].message);
+          return d.data;
+        }catch(e){if(attempt>=5)throw e;await sleep(300*(attempt+1))}
+      }
+    }finally{release()}
+  })();
+  CACHE.set(key,p);
+  p.catch(()=>CACHE.delete(key));
+  if(CACHE.size>800)CACHE.delete(CACHE.keys().next().value);
+  return p;
+}
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const poster=(u,p='s332')=>u?'https://images.justwatch.com'+u.replace('{profile}',p).replace('{format}','webp'):'';
+
+/* ---------- static config ---------- */
+const GENRE_LIST=[['act','Action & Adventure'],['ani','Animation'],['cmy','Comedy'],['crm','Crime'],['doc','Documentary'],['drm','Drama'],['fml','Family'],['fnt','Fantasy'],['hst','History'],['hrr','Horror'],['msc','Music & Musical'],['trl','Mystery & Thriller'],['rma','Romance'],['scf','Sci-Fi'],['spt','Sport'],['war','War'],['wsn','Western']];
+const GNAME=Object.fromEntries(GENRE_LIST);
+const RATINGS=['G','PG','PG-13','R'];
+const DECADES=[1950,1960,1970,1980,1990,2000,2010,2020];
+const COUNTRIES=[['United States','US'],['United Kingdom','GB'],['France','FR'],['Japan','JP'],['South Korea','KR'],['India','IN'],['Germany','DE'],['Italy','IT'],['Spain','ES'],['China','CN']];
+const GROUPS=[['genres','Genres'],['keywords','Period & themes'],['people','Cast & crew'],['ratings','Audience rating'],['decades','Era'],['countries','Made in'],['score','Scores']];
+
+/* ---------- tags: TMDB community keywords, fetched through our /api/tmdb function (the key never reaches the browser) ---------- */
+const TAG_GROUPS=[
+ ['Period & setting',[['18th century',160279],['19th century',207928],['Victorian England',8250],['Medieval',161257],['Ancient Rome',5049],['Ancient Greece',162861],['World War I',2504],['World War II',1956],['Cold War',2106],['Vietnam War',2957],['American Civil War',179585],['Wild West',155573],['Prohibition era',947],['1920s',207876],['1950s',208611],['1970s',1228],['1980s',208289]]],
+ ['Themes',[['Heist',10051],['Time travel',4379],['Dystopia',4565],['Post-apocalyptic',4458],['Whodunit',12570],['Serial killer',10714],['Haunted house',3358],['Revenge',9748],['Coming of age',10683],['Road trip',7312],['Based on true story',9672],['Based on a book',818],['Small town',1415],['Zombie',12377],['Spy',470],['Con artist',10453],['Courtroom',33519],['Period drama',15060],['Neo-noir',207268],['Dark comedy',10123]]]
+];
+const TAG_NAME=Object.fromEntries(TAG_GROUPS.flatMap(([,l])=>l.map(([n,i])=>[i,n])));
+let TAGSET=new Set();
+async function tmdbGet(path,params={}){
+  const r=await fetch('/api/tmdb?'+new URLSearchParams({path,...params}));
+  if(!r.ok)throw new Error('tmdb '+r.status);
+  return r.json();
+}
+// Movies carrying the chosen tags (ALL = comma, ANY = pipe), most popular first, up to 2,000.
+async function fetchTagSet(my){
+  const q={with_keywords:S.keywords.list.map(k=>k.id).join(S.keywords.mode==='OR'?'|':','),sort_by:'popularity.desc',include_adult:'false'};
+  const first=await tmdbGet('/discover/movie',{...q,page:1});
+  const pagesOut=[first.results];
+  const pages=Math.min(first.total_pages||1,100);
+  const rest=await Promise.all(Array.from({length:Math.max(pages-1,0)},async(_,k)=>{
+    await slot();
+    try{return my===token?(await tmdbGet('/discover/movie',{...q,page:k+2})).results:[]}
+    catch(e){return[]}finally{release()}
+  }));
+  const films=[...pagesOut,...rest].flat().map(r=>({id:r.id,title:r.title,year:parseInt((r.release_date||'').slice(0,4))||0}));
+  return{films,set:new Set(films.map(f=>f.id)),total:first.total_results||films.length};
+}
+// Look tagged films up on the movie service directly: ~20 per request (aliased queries), matched by TMDB id.
+const normT=t=>String(t||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+async function resolveBatch(films,my){
+  const parts=films.map((f,i)=>`a${i}:popularTitles(country:US,first:5,filter:{objectTypes:[MOVIE],${f.year?`releaseYear:{min:${f.year-1},max:${f.year+1}},`:''}searchQuery:${JSON.stringify(f.title)}}){edges{node{id objectId ... on Movie{content(country:US,language:en){${FIELDS}}}}}}`);
+  const d=await gql(`query{${parts.join('\n')}}`,{},()=>my===token);
+  const out=[];
+  films.forEach((f,i)=>{
+    const nodes=((d['a'+i]||{}).edges||[]).map(e=>e.node).filter(n=>n.content);
+    const hit=nodes.find(n=>String(n.content.externalIds&&n.content.externalIds.tmdbId)===String(f.id))
+      ||nodes.find(n=>normT(n.content.title)===normT(f.title)&&Math.abs((n.content.originalReleaseYear||0)-f.year)<=1&&!(n.content.externalIds&&n.content.externalIds.tmdbId));
+    if(hit)out.push(toMovie(hit));
+  });
+  return out;
+}
+// Client-side version of the server filters, for movies that came from a direct lookup.
+function filterTest(f,m){
+  if(f.releaseYear&&!(m.year>=f.releaseYear.min&&m.year<=f.releaseYear.max))return false;
+  if(f.ageCertifications&&!f.ageCertifications.includes(m.cert))return false;
+  if(f.imdbScore&&!(m.score>=f.imdbScore.min))return false;
+  if(f.tomatoMeter&&!(m.rt>=f.tomatoMeter.min))return false;
+  if(f.productionCountries&&!m.countries.some(c=>f.productionCountries.includes(c)))return false;
+  if(S.sort==='imdb'&&m.votes<5000)return false;
+  if(S.sort==='new'&&m.year>YEAR_NOW)return false;
+  return true;
+}
+
+/* ---------- state ---------- */
+const S={
+  genres:{inc:[],exc:[],mode:'AND'},
+  keywords:{list:[],mode:'AND'},
+  people:{list:[],mode:'AND'},
+  ratings:{sel:[]},
+  decades:{sel:[]},
+  countries:{sel:[]},
+  score:{min:0,rt:0},
+  conn:{},
+  large:false,
+  sort:'pop'
+};
+let POOL=[],token=0;
+const SORTS={pop:(a,b)=>b.votes-a.votes,rt:(a,b)=>((b.rt??-1)-(a.rt??-1))||(b.votes-a.votes),imdb:(a,b)=>((b.score||0)-(a.score||0))||(b.votes-a.votes),new:(a,b)=>((b.year||0)-(a.year||0))||(b.votes-a.votes)};
+
+const active=k=>{
+  switch(k){
+    case'genres':return S.genres.inc.length||S.genres.exc.length;
+    case'keywords':return S.keywords.list.length;
+    case'people':return S.people.list.length;
+    case'ratings':return S.ratings.sel.length;
+    case'decades':return S.decades.sel.length;
+    case'countries':return S.countries.sel.length;
+    case'score':return S.score.min>0||S.score.rt>0;
+  }
+};
+const activeKeys=()=>GROUPS.map(g=>g[0]).filter(active);
+const connOf=k=>S.conn[k]||'AND';
+
+/* ---------- query building ---------- */
+/* ---------- data loading ---------- */
+const SORT_ENUM={pop:'POPULAR',rt:'POPULAR',imdb:'IMDB_SCORE',new:'RELEASE_YEAR'};
+const sortKey=s=>s==='rt'?'pop':s;
+const YEAR_NOW=new Date().getFullYear();
+const CAP=2000; // the data source returns at most ~2000 results per query
+const FIELDS='title originalReleaseYear posterUrl ageCertification scoring{imdbScore imdbVotes tomatoMeter} genres{shortName} externalIds{tmdbId} productionCountries';
+const listQ=(withDesc,sort)=>`query($f:TitleFilter,$first:Int!,$after:String){popularTitles(country:US,first:$first,after:$after,filter:$f,sortBy:${SORT_ENUM[sort]}){totalCount edges{node{id objectId ... on Movie{content(country:US,language:en){${FIELDS}${withDesc?' shortDescription':''}}}}}}}`;
+const toMovie=n=>({id:n.id,oid:n.objectId,title:n.content.title,year:n.content.originalReleaseYear,poster:n.content.posterUrl,cert:n.content.ageCertification,score:n.content.scoring&&n.content.scoring.imdbScore,rt:n.content.scoring&&n.content.scoring.tomatoMeter,desc:n.content.shortDescription||'',tmdb:Number(n.content.externalIds&&n.content.externalIds.tmdbId)||null,votes:(n.content.scoring&&n.content.scoring.imdbVotes)||0,genres:(n.content.genres||[]).map(g=>g.shortName),countries:n.content.productionCountries||[]});
+// Sorting by IMDb score or newest needs guards, otherwise obscure 10.0-with-20-votes and unreleased 2031 titles float to the top.
+function withSortGuards(f){
+  const g={...f};
+  if(S.sort==='imdb'){const c=g.imdbVotes||{};g.imdbVotes={...c,min:Math.max(c.min||0,5000)}}
+  if(S.sort==='new'){const c=g.releaseYear||{};g.releaseYear={...c,max:Math.min(c.max??9999,YEAR_NOW)}}
+  return g;
+}
+// Year slices for keyword scans: each slice is its own ~2000-result window, so the scan reaches far more of the catalog.
+const SCAN_PARTS=[[1900,1959],[1960,1969],[1970,1979],[1980,1984],[1985,1989],[1990,1994],[1995,1999],[2000,2004],[2005,2009],[2010,2014],[2015,2019],[2020,2024],[2025,2029]];
+
+// Stream one query: page 1 first (so results show fast), the remaining pages in parallel.
+async function streamQuery(f,test,run,cap,onMovies,strict,noTotal){
+  const my=run.my,alive=()=>my===token;
+  const full={objectTypes:['MOVIE'],...withSortGuards(f)};
+  const q=listQ(run.withDesc,S.sort);
+  const getPage=async i=>{
+    for(let a=0;;a++){
+      try{return await gql(q,{f:full,first:100,after:i?btoa(String(i*100)):null},alive)}
+      catch(e){if(!alive())throw STALE;if(e===STALE&&a<2)continue;throw e}
+    }
+  };
+  const absorb=d=>{
+    const es=d.popularTitles.edges;run.scanned+=es.length;
+    const ms=es.map(e=>e.node).filter(n=>n.content).map(toMovie).filter(m=>(!strict||strict(m))&&(!test||test(m)));
+    if(ms.length)onMovies(ms);
+    return es.length;
+  };
+  const first=await getPage(0);
+  const total=first.popularTitles.totalCount;
+  if(!noTotal)run.total+=total;absorb(first);
+  const pages=Math.min(Math.ceil(Math.min(total,cap)/100),20);
+  await Promise.all(Array.from({length:Math.max(pages-1,0)},(_,k)=>getPage(k+1).then(absorb).catch(e=>{if(e!==STALE)run.errors++})));
+}
+
+// Turn one AND-cluster of groups into alternatives (unioned). Each alt: {filter,test,persons:[ids]}
+function clusterAlts(keys){
+  let base={},tests=[],stricts=[],deep=false,tagKw=false,persons=[],alts=[{}];
+  const cross=(a,b)=>a.flatMap(x=>b.map(y=>({...x,...y})));
+  for(const k of keys){
+    if(k==='genres'){
+      const{inc,exc,mode}=S.genres;
+      if(inc.length){
+        if(mode==='OR')base.genres=inc;
+        else{base.genres=[inc[0]];if(inc.length>1)tests.push(m=>inc.every(g=>m.genres.includes(g)))}
+      }
+      if(exc.length)base.excludeGenres=exc;
+      // the source's genre index and the genre list it displays disagree for a few titles; enforce what is displayed
+      if(inc.length)stricts.push(mode==='OR'?(m=>inc.some(g=>m.genres.includes(g))):(m=>inc.every(g=>m.genres.includes(g))));
+      if(exc.length)stricts.push(m=>!exc.some(g=>m.genres.includes(g)));
+    }else if(k==='keywords'){
+      tagKw=true;
+    }else if(k==='people'){
+      if(S.people.mode==='OR')alts=cross(alts,S.people.list.map(p=>({_persons:[p.id]})));
+      else persons=S.people.list.map(p=>p.id);
+    }else if(k==='ratings'){base.ageCertifications=S.ratings.sel;}
+    else if(k==='decades'){alts=cross(alts,S.decades.sel.map(d=>({releaseYear:{min:d,max:d+9}})));}
+    else if(k==='countries'){alts=cross(alts,S.countries.sel.map(c=>({productionCountries:[c]})));}
+    else if(k==='score'){
+      if(S.score.min>0)base.imdbScore={min:S.score.min};
+      if(S.score.rt>0)base.tomatoMeter={min:S.score.rt};
+    }
+  }
+  return alts.map(a=>{
+    const{_persons,...rest}=a;
+    const pp=_persons||persons;
+    const tagged=tagKw&&!pp.length;          // with a person filter there is no id to look up by, so fall back to a scan
+    const tl=[...tests];if(tagKw&&!tagged)tl.push(m=>m.tmdb!=null&&TAGSET.has(m.tmdb));
+    return{filter:{...base,...rest},test:tl.length?(m=>tl.every(f=>f(m))):null,strict:stricts.length?(m=>stricts.every(f=>f(m))):null,deep:tagKw&&!tagged,tagged,persons:pp};
+  });
+}
+// AND binds tighter than OR: split into clusters at each OR connector.
+function buildAlts(){
+  const keys=activeKeys();
+  if(!keys.length)return[{filter:{},test:null,strict:null,deep:false,tagged:false,persons:[]}];
+  const clusters=[];
+  keys.forEach((k,i)=>{if(i===0||connOf(k)==='OR')clusters.push([k]);else clusters[clusters.length-1].push(k)});
+  return clusters.flatMap(clusterAlts);
+}
+async function runAlt(a,run,add,cap){
+  const my=run.my;
+  if(a.tagged){
+    const post=m=>filterTest(a.filter,m)&&(!a.strict||a.strict(m))&&(!a.test||a.test(m));
+    const fs=run.tagFilms,batches=[];
+    for(let i=0;i<fs.length;i+=20)batches.push(fs.slice(i,i+20));
+    await Promise.all(batches.map(async b=>{
+      try{const ms=await resolveBatch(b,my);run.scanned+=b.length;run.found+=ms.length;const ok=ms.filter(post);if(ok.length)add(ok)}
+      catch(e){if(e!==STALE)run.errors++}
+    }));
+    return;
+  }
+  let parts=[{}];
+  // Client-side filters (keywords, several required genres) need to scan titles. If more than one query window
+  // (~2000 results) fits the other filters, split the scan into year slices so far more of the catalog is covered.
+  if(a.test&&!a.filter.releaseYear&&a.persons.length<2){
+    const f={objectTypes:['MOVIE'],...withSortGuards(a.filter),...(a.persons.length?{personId:a.persons[0]}:{})};
+    const probe=await gql('query($f:TitleFilter){popularTitles(country:US,first:1,filter:$f){totalCount}}',{f},()=>my===token);
+    if(probe.popularTitles.totalCount>cap*0.95)parts=SCAN_PARTS.map(([min,max])=>({releaseYear:{min,max}}));
+  }
+  if(a.persons.length<=1){
+    const extra=a.persons.length?{personId:a.persons[0]}:{};
+    return Promise.all(parts.map(p=>streamQuery({...a.filter,...p,...extra},a.test,run,cap,add,a.strict)));
+  }
+  // ALL of several people: collect each person's list, then keep titles present in every list
+  const lists=await Promise.all(a.persons.map(async pid=>{
+    const got=[];
+    await streamQuery({...a.filter,personId:pid},a.test,run,cap,ms=>got.push(...ms),a.strict,true);
+    return got;
+  }));
+  const ids=lists.map(l=>new Set(l.map(m=>m.id)));
+  const both=lists[0].filter(m=>ids.every(s=>s.has(m.id)));
+  run.total+=both.length;add(both);
+}
+
+/* ---------- refresh ---------- */
+let deb,RUN=null,SHOW=100;
+function schedule(){renderFilters();renderRule();clearTimeout(deb);deb=setTimeout(refresh,250)}
+function pushUpdate(run){
+  const flush=()=>{run.dirty=false;if(run.my===token)syncPool(run)};
+  if(!run.swapped)return flush();            // first results replace the old view immediately
+  if(run.dirty)return;run.dirty=true;setTimeout(flush,2000);   // then at most every 2s, so the grid does not churn
+}
+function syncPool(run){
+  const grid=document.getElementById('grid');
+  if(!run.swapped){run.swapped=true;SHOW=100;grid.scrollTop=0;grid.classList.remove('stale')}
+  else if(grid.scrollTop>200){renderMeta();return}   // don't reshuffle while the user is scrolling
+  POOL=[...run.pool.values()].sort(SORTS[S.sort]);
+  renderGrid(null);
+}
+async function refresh(){
+  const my=++token;
+  const run=RUN={my,pool:new Map(),total:0,scanned:0,found:0,errors:0,pending:true,dirty:false,swapped:false,hasTest:false,tagged:false,withDesc:false,alts:1,sort:S.sort,tagTotal:0,tagFilms:[]};
+  const grid=document.getElementById('grid');
+  if(POOL.length)grid.classList.add('stale');else renderGrid(null);   // keep the previous results on screen (dimmed) instead of blanking
+  const finish=()=>{grid.classList.remove('stale')};
+  if(activeKeys().includes('keywords')){
+    try{const r=await fetchTagSet(my);if(my!==token)return;TAGSET=r.set;run.tagTotal=r.total;run.tagFilms=r.films}
+    catch(e){if(my!==token)return;run.pending=false;finish();renderGrid('Could not load tags right now. Try again in a moment.',true);return}
+    if(!TAGSET.size){run.pending=false;finish();POOL=[];run.swapped=true;renderGrid(null);return}
+  }
+  const alts=buildAlts();
+  run.hasTest=alts.some(a=>a.test);run.tagged=alts.some(a=>a.tagged);run.alts=alts.length;
+  const cap=alts.length>1?1000:CAP;
+  const add=ms=>{ms.forEach(m=>{if(!run.pool.has(m.id))run.pool.set(m.id,m)});pushUpdate(run)};
+  const results=await Promise.allSettled(alts.map(a=>runAlt(a,run,add,cap)));
+  if(my!==token)return;
+  run.pending=false;finish();
+  if(results.every(r=>r.status==='rejected')&&results.some(r=>r.reason!==STALE)){
+    renderGrid('Could not reach the movie service. Check your connection and try again.',true);return}
+  POOL=[...run.pool.values()].sort(SORTS[S.sort]);
+  if(!run.swapped){run.swapped=true;SHOW=100;document.getElementById('grid').scrollTop=0}
+  if(!POOL.length&&run.errors){renderGrid('The movie service is busy right now, so some results could not load. Wait a few seconds and try again.',true);return}
+  renderGrid(null);
+}
+
+/* ---------- rendering ---------- */
+function chip(label,cls,attrs=''){return`<button class="chip ${cls}" ${attrs}>${esc(label)}</button>`}
+function modeToggle(key,mode){
+  return`<span><button class="tog ${mode==='AND'?'on':''}" data-mode="${key}" data-v="AND">ALL</button> <button class="tog ${mode==='OR'?'on':''}" data-mode="${key}" data-v="OR">ANY</button></span>`;
+}
+function renderFilters(){
+  const f=document.getElementById('filters');const keepScroll=f.scrollTop;
+  const ae=document.activeElement;
+  const keepId=ae&&(ae.id==='pq'||ae.id==='kq')?ae.id:null;
+  const keep=keepId?ae.value:null;
+  const g=(title,body,modeKey)=>`<div class="group"><div class="ghead"><h3>${title}</h3>${modeKey?modeToggle(modeKey,S[modeKey].mode):''}</div>${body}</div>`;
+  f.innerHTML=
+    g('Genres',`<div class="chips">${GENRE_LIST.map(([c,n])=>{
+      const cl=S.genres.inc.includes(c)?'inc':S.genres.exc.includes(c)?'exc':'';
+      return chip(n,cl,`data-genre="${c}"`)}).join('')}</div><div style="color:var(--mut);font-size:11.5px;margin-top:5px">Tap once to require, again to exclude.</div>`,'genres')+
+    g('Period & themes',`<div class="dd"><input type="text" id="kq" placeholder="Search tags: 18th century, heist…" autocomplete="off"><div class="list" id="klist" hidden></div></div>
+      <div class="chips" style="margin-top:6px">${S.keywords.list.filter(k=>!TAG_NAME[k.id]).map(k=>`<button class="chip sel" data-kwdel="${k.id}">${esc(k.name)}<span class="x">×</span></button>`).join('')}</div>
+      ${TAG_GROUPS.map(([t,items])=>`<div class="kwlabel">${t}</div><div class="chips">${items.map(([l,id])=>chip(l,S.keywords.list.some(k=>k.id===id)?'sel':'',`data-kw="${id}" data-kwname="${esc(l)}"`)).join('')}</div>`).join('')}
+      <div style="color:var(--mut);font-size:11.5px;margin-top:6px">Community tags from TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.</div>`,'keywords')+
+    g('Cast & crew',`<div class="dd"><input type="text" id="pq" placeholder="Search actor, director, writer…" autocomplete="off"><div class="list" id="plist" hidden></div></div>
+      <div class="chips" style="margin-top:6px">${S.people.list.map(p=>`<button class="chip sel" data-person="${esc(p.id)}">${esc(p.name)}<span class="x">×</span></button>`).join('')}</div>`,'people')+
+    g('Audience rating',`<div class="chips">${RATINGS.map(r=>chip(r,S.ratings.sel.includes(r)?'sel':'',`data-rating="${r}"`)).join('')}</div>`)+
+    g('Era',`<div class="chips">${DECADES.map(d=>chip(d+'s',S.decades.sel.includes(d)?'sel':'',`data-decade="${d}"`)).join('')}</div>`)+
+    g('Made in',`<div class="chips">${COUNTRIES.map(([n,c])=>chip(n,S.countries.sel.includes(c)?'sel':'',`data-country="${c}"`)).join('')}</div>`)+
+    g('Scores',`<div style="display:flex;justify-content:space-between;color:var(--mut);font-size:12px"><span>Minimum IMDb score</span><span>${S.score.min?S.score.min.toFixed(1)+'+':'Any'}</span></div>
+      <input type="range" id="minscore" min="0" max="9" step="0.5" value="${S.score.min}">
+      <div style="display:flex;justify-content:space-between;color:var(--mut);font-size:12px;margin-top:8px"><span>Minimum Rotten Tomatoes (critics)</span><span>${S.score.rt?S.score.rt+'%+':'Any'}</span></div>
+      <input type="range" id="rtscore" min="0" max="100" step="5" value="${S.score.rt}">`);
+  f.scrollTop=keepScroll;
+  if(keepId){const el=document.getElementById(keepId);el.value=keep;el.focus()}
+}
+function renderRule(){
+  const bar=document.getElementById('rulebar');
+  const keys=activeKeys();
+  if(!keys.length){bar.innerHTML='<span class="lbl">Showing:</span> <span class="term">Most popular movies</span> <span class="lbl">— add filters on the left.</span>';return}
+  const join=(arr,mode)=>arr.join(mode==='OR'?' or ':' and ');
+  const phrase=k=>{
+    switch(k){
+      case'genres':{
+        const p=[];
+        if(S.genres.inc.length)p.push(esc(join(S.genres.inc.map(c=>GNAME[c]),S.genres.mode)));
+        if(S.genres.exc.length)p.push(`<span class="not">not ${esc(S.genres.exc.map(c=>GNAME[c]).join(' or '))}</span>`);
+        return'Genre: '+p.join(', ');}
+      case'keywords':return'Tagged: '+esc(join(S.keywords.list.map(k=>k.name),S.keywords.mode));
+      case'people':return'With: '+esc(join(S.people.list.map(p=>p.name),S.people.mode));
+      case'ratings':return'Rated '+esc(S.ratings.sel.join(' or '));
+      case'decades':return esc(S.decades.sel.slice().sort().map(d=>d+'s').join(' or '));
+      case'countries':return'Made in '+esc(S.countries.sel.map(c=>COUNTRIES.find(x=>x[1]===c)[0]).join(' or '));
+      case'score':{
+        const p=[];
+        if(S.score.min)p.push('IMDb '+S.score.min.toFixed(1)+'+');
+        if(S.score.rt)p.push('Rotten Tomatoes '+S.score.rt+'%+');
+        return esc(p.join(', '));}
+    }
+  };
+  bar.innerHTML='<span class="lbl">Showing movies:</span>'+keys.map((k,i)=>
+    (i?`<button class="conn" data-conn="${k}" title="Click to switch AND / OR">${connOf(k)}</button>`:'')+`<span class="term">${phrase(k)}</span>`).join('');
+  if(keys.length>1&&keys.some((k,i)=>i&&connOf(k)==='OR'))bar.innerHTML+='<span class="lbl">(AND is applied before OR)</span>';
+}
+const cardHTML=m=>`<button class="card" data-movie="${esc(m.id)}">${m.poster?`<img loading="lazy" src="${poster(m.poster)}" alt="${esc(m.title)}">`:`<div class="ph">${esc(m.title)}</div>`}
+      <div class="t"><b>${esc(m.title)}</b><span>${m.year||''}${m.score?' · ★ '+m.score.toFixed(1):''}${m.rt!=null?` · <span class="rt ${m.rt>=60?'fresh':'rot'}">RT ${m.rt}%</span>`:''}</span></div></button>`;
+const fmt=n=>Number(n).toLocaleString('en-US');
+function renderMeta(){
+  const meta=document.getElementById('meta'),r=RUN;
+  if(!r){meta.textContent='';return}
+  const dots=r.pending?' …':'';
+  if(r.pending&&!r.swapped){meta.textContent='Searching…';return}
+  const n=POOL.length,approx=r.alts>1?'about ':'';
+  const warn=r.errors?` (${r.errors} page${r.errors>1?'s':''} failed to load)`:'';
+  if(r.tagged){
+    meta.textContent=`${fmt(n)} movie${n===1?'':'s'} · TMDB lists ${fmt(r.tagTotal)} films with these tags${r.tagFilms.length<r.tagTotal?` (the ${fmt(r.tagFilms.length)} most popular checked)`:''}${!r.pending&&r.found<r.tagFilms.length?`, ${fmt(r.found)} of them are on the movie service`:''}${dots}${(r.errors?` (${r.errors} lookup${r.errors>1?'s':''} failed)`:'')}`;
+  }else if(r.alts>1){
+    meta.textContent=`${fmt(n)} movie${n===1?'':'s'} across your combined searches${dots}${warn}`;
+  }else if(r.hasTest){
+    meta.textContent=`${fmt(n)} match${n===1?'':'es'} found in the ${fmt(r.scanned)} titles scanned${r.total?` of ${approx}${fmt(r.total)} that fit your other filters`:''}${r.tagTotal?` · ${fmt(r.tagTotal)} films carry these tags on TMDB`:''}${dots}${warn}`;
+  }else if(n>=r.total||!r.total){
+    meta.textContent=`${fmt(n)} movie${n===1?'':'s'}${dots}${warn}`;
+  }else{
+    const what={pop:'popular',rt:'popular',imdb:'highly rated',new:'recent'}[r.sort];
+    meta.textContent=`Showing the ${fmt(n)} most ${what} of ${approx}${fmt(r.total)}${r.total>n+99?' — add filters to narrow':''}${r.sort==='rt'?' · sorted by Rotten Tomatoes':''}${dots}${warn}`;
+  }
+}
+let io;
+function observeMore(){
+  if(io)io.disconnect();
+  const el=document.getElementById('more');if(!el)return;
+  io=new IntersectionObserver(es=>{if(es[0].isIntersecting){io.disconnect();appendMore()}},{root:document.getElementById('grid'),rootMargin:'800px'});
+  io.observe(el);
+}
+// Card elements are created once per movie and reused, so redrawing the grid never reloads posters.
+const NODES=new Map();
+function cardNode(m){
+  let n=NODES.get(m.id);
+  if(!n){const t=document.createElement('template');t.innerHTML=cardHTML(m).trim();n=t.content.firstChild;NODES.set(m.id,n);if(NODES.size>4000)NODES.delete(NODES.keys().next().value)}
+  return n;
+}
+function appendMore(){
+  const more=document.getElementById('more');if(!more)return;
+  const from=SHOW;SHOW+=100;
+  more.before(...POOL.slice(from,SHOW).map(cardNode));
+  if(POOL.length<=SHOW)more.remove();else observeMore();
+}
+function renderGrid(msg,isErr){
+  const grid=document.getElementById('grid');
+  grid.classList.toggle('large',S.large);
+  document.getElementById('sizeBtn').textContent=S.large?'Compact cards':'Larger cards';
+  if(msg){grid.classList.remove('stale');grid.innerHTML=`<div class="msg ${isErr?'err':''}">${esc(msg)}</div>`;document.getElementById('meta').textContent='';return}
+  if(!POOL.length){
+    grid.innerHTML=RUN&&RUN.pending?'<div class="msg">Loading…</div>':'<div class="msg">No movies match all of that. Loosen a filter or switch an AND to OR.</div>';
+    renderMeta();return;
+  }
+  const kids=POOL.slice(0,SHOW).map(cardNode);
+  if(POOL.length>SHOW){const more=document.createElement('div');more.id='more';more.className='msg';more.textContent='Loading more…';kids.push(more)}
+  grid.replaceChildren(...kids);
+  observeMore();renderMeta();
+}
+
+/* ---------- detail ---------- */
+const DETAIL_Q=`query($id:ID!){node(id:$id){... on Movie{content(country:US,language:en){title originalReleaseYear shortDescription runtime posterUrl ageCertification scoring{imdbScore tomatoMeter} genres{shortName} externalIds{tmdbId} clips{sourceUrl externalId provider name} credits{role name}} offers(country:US,platform:WEB){monetizationType package{clearName}}}}}`;
+async function openMovie(id){
+  const modal=document.getElementById('modal');
+  modal.className='open';modal.innerHTML='<div class="sheet">Loading…</div>';
+  try{
+    const n=(await gql(DETAIL_Q,{id})).node,c=n.content;
+    const credits=c.credits||[];
+    const dir=[...new Set(credits.filter(x=>x.role==='DIRECTOR').map(x=>x.name))].join(', ');
+    const cast=credits.filter(x=>x.role==='ACTOR').slice(0,10).map(x=>x.name).join(', ');
+    const by={};(n.offers||[]).forEach(o=>{(by[o.monetizationType]=by[o.monetizationType]||new Set()).add(o.package.clearName)});
+    const line=(label,t)=>by[t]?`<div style="margin:4px 0"><span style="color:var(--mut)">${label}:</span> ${[...by[t]].map(esc).join(', ')}</div>`:'';
+    const where=line('Stream','FLATRATE')+line('Free with ads','ADS')+line('Rent','RENT')+line('Buy','BUY');
+    const clip=(c.clips||[]).find(x=>/youtube/i.test((x.provider||'')+(x.sourceUrl||''))&&x.externalId);
+    const ytq='https://www.youtube.com/results?search_query='+encodeURIComponent(c.title+' '+c.originalReleaseYear+' official trailer');
+    modal.innerHTML=`<div class="sheet"><button class="close" aria-label="Close">×</button>
+      ${c.posterUrl?`<img class="poster" src="${poster(c.posterUrl,'s592')}" alt="">`:''}
+      <div style="min-width:0;flex:1">
+        <h2>${esc(c.title)}</h2>
+        <div class="sub">${c.originalReleaseYear||''} ${c.ageCertification?`· <span class="rated">${esc(c.ageCertification)}</span>`:''} ${c.runtime?`· ${c.runtime} min`:''} ${c.scoring&&c.scoring.imdbScore?`· ★ ${c.scoring.imdbScore.toFixed(1)} IMDb`:''} ${c.scoring&&c.scoring.tomatoMeter!=null?`· <span class="rt ${c.scoring.tomatoMeter>=60?'fresh':'rot'}">RT ${c.scoring.tomatoMeter}%</span>`:''} · ${esc((c.genres||[]).map(g=>GNAME[g.shortName]||g.shortName).join(', '))}</div>
+        <div class="row">${esc(c.shortDescription||'No synopsis available.')}</div>
+        <div class="row"><b>Director</b>${esc(dir||'Not listed')}</div>
+        <div class="row"><b>Cast</b>${esc(cast||'Not listed')}</div>
+        <div class="row"><b>Tags</b><span id="tagrow" style="color:var(--mut)">${c.externalIds&&c.externalIds.tmdbId?'Loading…':'None listed'}</span></div>
+        <div class="row"><b>Where to watch (US)</b>${where||'<span style="color:var(--mut)">No US availability listed.</span>'}</div>
+        <div class="row" id="trailer">${clip?`<button class="btn" data-trailer="${esc(clip.externalId)}">▶ Watch trailer</button>`:`<a class="btn" style="text-decoration:none;display:inline-block" href="${ytq}" target="_blank" rel="noopener">▶ Find trailer on YouTube</a>`}</div>
+      </div></div>`;
+    const tid=c.externalIds&&c.externalIds.tmdbId;
+    if(tid)tmdbGet(`/movie/${tid}/keywords`).then(d=>{
+      const el=document.getElementById('tagrow');if(!el)return;
+      const ks=(d.keywords||[]).slice(0,24);
+      el.innerHTML=ks.length?ks.map(k=>`<button class="chip" data-kw="${k.id}" data-kwname="${esc(k.name)}">${esc(k.name)}</button>`).join(' '):'None listed';
+    }).catch(()=>{const el=document.getElementById('tagrow');if(el)el.textContent='Unavailable'});
+  }catch(e){modal.innerHTML='<div class="sheet">Could not load this movie. <button class="btn close2">Close</button></div>'}
+}
+const closeModal=()=>{const m=document.getElementById('modal');m.className='';m.innerHTML=''};
+
+/* ---------- events ---------- */
+const tog=(arr,v)=>{const i=arr.indexOf(v);i>=0?arr.splice(i,1):arr.push(v)};
+let pdeb,kdeb;
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button,.dd .list div');
+  if(!t)return;
+  const d=t.dataset||{};
+  if(d.genre){const c=d.genre,I=S.genres.inc,X=S.genres.exc;
+    if(I.includes(c)){I.splice(I.indexOf(c),1);X.push(c)}else if(X.includes(c))X.splice(X.indexOf(c),1);else I.push(c);schedule()}
+  else if(d.rating){tog(S.ratings.sel,d.rating);schedule()}
+  else if(d.decade){tog(S.decades.sel,+d.decade);schedule()}
+  else if(d.country){tog(S.countries.sel,d.country);schedule()}
+  else if(d.kw){const id=+d.kw,i=S.keywords.list.findIndex(k=>k.id===id);i>=0?S.keywords.list.splice(i,1):S.keywords.list.push({id,name:d.kwname});closeModal();schedule()}
+  else if(d.kwdel){S.keywords.list=S.keywords.list.filter(k=>k.id!==+d.kwdel);schedule()}
+  else if(d.kwadd){const id=+d.kwadd;if(!S.keywords.list.some(k=>k.id===id))S.keywords.list.push({id,name:d.kwname});schedule()}
+  else if(d.person){S.people.list=S.people.list.filter(p=>p.id!==d.person);schedule()}
+  else if(d.mode){S[d.mode].mode=d.v;schedule()}
+  else if(d.conn){S.conn[d.conn]=connOf(d.conn)==='AND'?'OR':'AND';schedule()}
+  else if(d.movie){openMovie(d.movie)}
+  else if(d.trailer){document.getElementById('trailer').innerHTML=`<iframe src="https://www.youtube.com/embed/${encodeURIComponent(d.trailer)}?autoplay=1" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`}
+  else if(t.classList.contains('close')||t.classList.contains('close2'))closeModal();
+  else if(d.pid){S.people.list.push({id:d.pid,name:d.pname});document.getElementById('plist').hidden=true;schedule()}
+});
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+const PEOPLE_Q=`query($q:String){popularPeople(country:US,first:8,filter:{searchQuery:$q}){edges{node{id content(country:US,language:en){fullName}}}}}`;
+document.addEventListener('input',e=>{
+  if(e.target.id==='rtscore'){S.score.rt=+e.target.value;renderRule();clearTimeout(deb);deb=setTimeout(()=>{renderFilters();refresh()},300)}
+  if(e.target.id==='kq'){
+    clearTimeout(kdeb);const q=e.target.value.trim(),l=document.getElementById('klist');
+    if(q.length<2){l.hidden=true;return}
+    kdeb=setTimeout(async()=>{
+      try{
+        const d=await tmdbGet('/search/keyword',{query:q});
+        const r=d.results.filter(k=>!S.keywords.list.some(x=>x.id===k.id)).slice(0,8);
+        l.innerHTML=r.map(k=>`<div data-kwadd="${k.id}" data-kwname="${esc(k.name)}">${esc(k.name)}</div>`).join('')||'<div style="color:var(--mut)">No matching tags</div>';
+        l.hidden=false;
+      }catch(err){}
+    },200);
+  }
+  if(e.target.id==='minscore'){S.score.min=+e.target.value;renderRule();clearTimeout(deb);deb=setTimeout(()=>{renderFilters();refresh()},300)}
+  if(e.target.id==='pq'){
+    clearTimeout(pdeb);const q=e.target.value.trim(),l=document.getElementById('plist');
+    if(q.length<2){l.hidden=true;return}
+    pdeb=setTimeout(async()=>{
+      try{
+        const d=await gql(PEOPLE_Q,{q});
+        const seen=new Set();
+        const r=d.popularPeople.edges.map(x=>({id:x.node.id,name:x.node.content.fullName})).filter(p=>{
+          if(seen.has(p.name)||S.people.list.some(x=>x.id===p.id))return false;seen.add(p.name);return true});
+        l.innerHTML=r.map(p=>`<div data-pid="${esc(p.id)}" data-pname="${esc(p.name)}">${esc(p.name)}</div>`).join('')||'<div style="color:var(--mut)">No matches</div>';
+        l.hidden=false;
+      }catch(err){}
+    },250);
+  }
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.id==='kq'){const first=document.querySelector('#klist div[data-kwadd]');if(first)first.click()}
+});
+document.getElementById('sortSel').onchange=e=>{
+  const old=S.sort;S.sort=e.target.value;SHOW=100;
+  if(sortKey(old)===sortKey(S.sort)&&RUN&&!RUN.pending){RUN.sort=S.sort;POOL.sort(SORTS[S.sort]);renderGrid(null)}else refresh();
+};
+document.getElementById('sizeBtn').onclick=()=>{S.large=!S.large;renderGrid(null)};
+document.getElementById('clearBtn').onclick=()=>{
+  Object.assign(S,{genres:{inc:[],exc:[],mode:'AND'},keywords:{list:[],mode:'AND'},people:{list:[],mode:'AND'},ratings:{sel:[]},decades:{sel:[]},countries:{sel:[]},score:{min:0,rt:0},conn:{}});
+  schedule();
+};
+document.getElementById('pickBtn').onclick=()=>{
+  if(!POOL.length)return;
+  openMovie(POOL[Math.floor(Math.random()*POOL.length)].id);
+};
+renderFilters();renderRule();refresh();
+</script>
+</body>
+</html>
